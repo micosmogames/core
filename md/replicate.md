@@ -139,6 +139,10 @@ console.log(fooPublicCopy, Private(fooPublicCopy))
   { }
 */
 ```
+## HISTORY
+
+### Version 0.1.1
+* Replicate context table was assigned the incorrect alternate context for public only replication contexts.
 
 ## LICENSE
 

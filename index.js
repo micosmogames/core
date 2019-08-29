@@ -12,4 +12,5 @@ Object.assign(module.exports,
   require('./bind'),
   require('./string'),
   require('./character'),
+  require('./number')
 );
