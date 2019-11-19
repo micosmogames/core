@@ -36,7 +36,8 @@ module.exports = {
   declareMethods,
   declareMethod,
   isaDeclaredMethod,
-  method
+  method,
+  methodNameBuilder
 };
 
 // Promotes a non-method function to pass 'this' as the first parameter. The function is assumed to interact with
@@ -101,4 +102,35 @@ function method(f) {
   if (!f.isaDeclaredMethod)
     throw new Error(`micosmo:method:method: Function has not been declared as a method. Func(${f})`);
   return f;
+}
+
+function methodNameBuilder(pattern, ...regExps) {
+  const dbRoot = Object.create(null);
+  return function (...values) {
+    if (values.length === 1 && Array.isArray(values[0]))
+      values = values[0];
+    let db = dbRoot;
+    const len = Math.min(regExps.length, values.length);
+    for (let i = 0; i < len; i++) {
+      const val = values[i] || '<empty>';
+      if (db[val]) {
+        db = db[val];
+        continue;
+      }
+      // No match, so will need to build and record a new name
+      let s = pattern; let j;
+      for (j = 0; j < len; j++)
+        s = s.replace(regExps[j], values[j]);
+      db = dbRoot;
+      for (j = 0; j < len - 1; j++) {
+        const val = values[j] || '<empty>';
+        db[val] = Object.create(null);
+        db = db[val];
+      }
+      db[values[j] || '<empty>'] = s;
+      return s;
+    }
+    // Already have a match for these values so just return result.
+    return db;
+  }
 }
